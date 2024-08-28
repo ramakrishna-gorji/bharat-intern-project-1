@@ -1,0 +1,148 @@
+HTML :
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Registration Form</h1>
+        <form id="registrationForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Register</button>
+        </form>
+        <p id="responseMessage"></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+CSS:
+
+  
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin: 10px 0 5px;
+}
+
+input {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px;
+    background-color: #2861a7;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #216e88;
+}
+
+#responseMessage {
+    text-align: center;
+    margin-top: 12px;
+}
+
+
+
+NODE JS :
+
+
+document.getElementById('registrationForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/register', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('responseMessage').innerText = data.message;
+    })
+    .catch(error => {
+        document.getElementById('responseMessage').innerText = 'An error occurred.';
+    });
+});
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
+
+const app = express();
+const port = 3000;
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Route to serve the HTML page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Route to handle form submission
+app.post('/register', (req, res) => {
+    const { username, email, password } = req.body;
+
+    // In a real application, you'd process and store this data, e.g., saving it to a database.
+    console.log(`Username: ${username}, Email: ${email}, Password: ${password}`);
+
+    // Respond with a success message
+    res.json({ message: 'Registration successful!' });
+});
+
+// Start the server
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
